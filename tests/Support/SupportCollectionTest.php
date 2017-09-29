@@ -795,7 +795,12 @@ class SupportCollectionTest extends TestCase
     public function testSortByString()
     {
         $data = new Collection([['name' => 'taylor'], ['name' => 'dayle']]);
-        $data = $data->sortBy('name');
+        $data = $data->sortBy('name', SORT_STRING);
+
+        $this->assertEquals([['name' => 'dayle'], ['name' => 'taylor']], array_values($data->all()));
+
+        $data = new Collection([['name' => 'taylor'], ['name' => 'dayle']]);
+        $data = $data->sortBy('name', SORT_STRING);
 
         $this->assertEquals([['name' => 'dayle'], ['name' => 'taylor']], array_values($data->all()));
     }
@@ -1556,6 +1561,14 @@ class SupportCollectionTest extends TestCase
 
         $this->assertTrue($c->contains->a);
         $this->assertFalse($c->contains->b);
+
+        $c = new Collection([
+            null, 1, 2,
+        ]);
+
+        $this->assertTrue($c->contains(function ($value) {
+            return is_null($value);
+        }));
     }
 
     public function testContainsStrict()
@@ -1756,6 +1769,17 @@ class SupportCollectionTest extends TestCase
         $this->assertEquals([1, 4, 7], $c[0]->all());
         $this->assertEquals([2, 5, null], $c[1]->all());
         $this->assertEquals([3, 6, null], $c[2]->all());
+    }
+
+    public function testPadPadsArrayWithValue()
+    {
+        $c = new Collection([1, 2, 3]);
+        $c = $c->pad(4, 0);
+        $this->assertEquals([1, 2, 3, 0], $c->all());
+
+        $c = new Collection([1, 2, 3, 4, 5]);
+        $c = $c->pad(4, 0);
+        $this->assertEquals([1, 2, 3, 4, 5], $c->all());
     }
 
     public function testGettingMaxItemsFromCollection()

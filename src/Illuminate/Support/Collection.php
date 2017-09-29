@@ -2,6 +2,7 @@
 
 namespace Illuminate\Support;
 
+use stdClass;
 use Countable;
 use Exception;
 use ArrayAccess;
@@ -217,7 +218,9 @@ class Collection implements ArrayAccess, Arrayable, Countable, IteratorAggregate
     {
         if (func_num_args() == 1) {
             if ($this->useAsCallable($key)) {
-                return ! is_null($this->first($key));
+                $placeholder = new stdClass;
+
+                return $this->first($key, $placeholder) !== $placeholder;
             }
 
             return in_array($key, $this->items);
@@ -1352,7 +1355,7 @@ class Collection implements ArrayAccess, Arrayable, Countable, IteratorAggregate
         }
 
         $descending ? arsort($results, $options)
-                    : asort($results, $options);
+            : asort($results, $options);
 
         // Once we have sorted all of the keys in the array, we will loop through them
         // and grab the corresponding model so we can set the underlying items list
@@ -1537,6 +1540,18 @@ class Collection implements ArrayAccess, Arrayable, Countable, IteratorAggregate
         }, $this->items], $arrayableItems);
 
         return new static(call_user_func_array('array_map', $params));
+    }
+
+    /**
+     * Pad collection to the specified length with a value.
+     *
+     * @param  int  $size
+     * @param  mixed  $value
+     * @return static
+     */
+    public function pad($size, $value)
+    {
+        return new static(array_pad($this->items, $size, $value));
     }
 
     /**

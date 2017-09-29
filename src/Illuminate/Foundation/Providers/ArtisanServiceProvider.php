@@ -16,7 +16,6 @@ use Illuminate\Foundation\Console\AppNameCommand;
 use Illuminate\Foundation\Console\JobMakeCommand;
 use Illuminate\Database\Console\Seeds\SeedCommand;
 use Illuminate\Foundation\Console\MailMakeCommand;
-use Illuminate\Foundation\Console\OptimizeCommand;
 use Illuminate\Foundation\Console\RuleMakeCommand;
 use Illuminate\Foundation\Console\TestMakeCommand;
 use Illuminate\Foundation\Console\EventMakeCommand;
@@ -98,7 +97,6 @@ class ArtisanServiceProvider extends ServiceProvider
         'MigrateReset' => 'command.migrate.reset',
         'MigrateRollback' => 'command.migrate.rollback',
         'MigrateStatus' => 'command.migrate.status',
-        'Optimize' => 'command.optimize',
         'PackageDiscover' => 'command.package.discover',
         'Preset' => 'command.preset',
         'QueueFailed' => 'command.queue.failed',
@@ -214,7 +212,7 @@ class ArtisanServiceProvider extends ServiceProvider
     protected function registerCacheClearCommand()
     {
         $this->app->singleton('command.cache.clear', function ($app) {
-            return new CacheClearCommand($app['cache']);
+            return new CacheClearCommand($app['cache'], $app['files']);
         });
     }
 
@@ -558,18 +556,6 @@ class ArtisanServiceProvider extends ServiceProvider
     {
         $this->app->singleton('command.notification.make', function ($app) {
             return new NotificationMakeCommand($app['files']);
-        });
-    }
-
-    /**
-     * Register the command.
-     *
-     * @return void
-     */
-    protected function registerOptimizeCommand()
-    {
-        $this->app->singleton('command.optimize', function ($app) {
-            return new OptimizeCommand($app['composer']);
         });
     }
 
